@@ -25,7 +25,9 @@ import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ChainStyle
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import coil.compose.AsyncImage
 import kr.co.rmadmsjm.jc04_constraintlayoutcard.ui.theme.JC04_ConstraintLayoutCardTheme
 
@@ -57,7 +59,6 @@ fun CardEx(cardData: CardData) {
         // 1. Row 레이아웃을 ConstraintLayout로 바꾸기
         ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
             val (profileImg, author, description) = createRefs()
-            var barrier = createEndBarrier(profileImg)
 
             AsyncImage(
                 model = cardData.imageUri,
@@ -72,7 +73,10 @@ fun CardEx(cardData: CardData) {
                         // linkTo(parent.top, parent.bottom)
                         // top.linkTo(parent.top)
                         // bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start, margin = 8.dp)
+                        start.linkTo(
+                            parent.start,
+                            margin = 8.dp
+                        )
 
                     }
             )
@@ -80,38 +84,61 @@ fun CardEx(cardData: CardData) {
                 text = cardData.author,
                 modifier = Modifier
                     .constrainAs(author) {
-                        start.linkTo(barrier, 10.dp)
+                        linkTo(
+                            profileImg.end,
+                            parent.end,
+                            startMargin = 8.dp,
+                            endMargin = 8.dp
+                        )
+                        width = Dimension.fillToConstraints
                     }
             )
             Text(
                 text = cardData.description,
                 modifier = Modifier
                     .constrainAs(description) {
-                        start.linkTo(barrier, 10.dp)
-                        top.linkTo(author.bottom)
+                        linkTo(
+                            profileImg.end,
+                            parent.end,
+                            startMargin = 8.dp,
+                            endMargin = 8.dp
+                        )
+                        width = Dimension.fillToConstraints
                     }
             )
-        }
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(8.dp)
-        ) {
-            AsyncImage(
-                model = cardData.imageUri,
-                contentDescription = cardData.imageDescription,
-                contentScale = ContentScale.Crop,
-                placeholder = ColorPainter(color = placeHolderColor),
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .size(40.dp)
+            val chain = createVerticalChain(
+                author,
+                description,
+                chainStyle = ChainStyle.Packed
             )
-            Spacer(modifier = Modifier.size(8.dp))
-            Column {
-                Text(text = cardData.author)
-                Text(text = cardData.description)
+
+            // chain으로 엮으면 개별 padding이 적용되지 않음
+            constrain(chain) {
+                top.linkTo(parent.top, margin = 8.dp)
+                bottom.linkTo(parent.bottom, margin = 8.dp)
             }
         }
+
+//        Row(
+//            verticalAlignment = Alignment.CenterVertically,
+//            modifier = Modifier.padding(8.dp)
+//        ) {
+//            AsyncImage(
+//                model = cardData.imageUri,
+//                contentDescription = cardData.imageDescription,
+//                contentScale = ContentScale.Crop,
+//                placeholder = ColorPainter(color = placeHolderColor),
+//                modifier = Modifier
+//                    .clip(CircleShape)
+//                    .size(40.dp)
+//            )
+//            Spacer(modifier = Modifier.size(8.dp))
+//            Column {
+//                Text(text = cardData.author)
+//                Text(text = cardData.description)
+//            }
+//        }
     }
 }
 
