@@ -8,11 +8,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,6 +40,7 @@ class MainActivity : ComponentActivity() {
 }
 
 // 4. `compositionLocalOf`에 `8.dp`를 넣어 `LocalElevation` 할당
+val localElevation = compositionLocalOf { 8.dp }
 
 @Composable
 fun Greeting() {
@@ -53,21 +58,32 @@ fun Greeting() {
 
     // 6. LocalElevation의 값을 `CompositionLocalProvider`로 바꾸기
 
-    Card(
-        modifier = Modifier.padding(8.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
+    CompositionLocalProvider(value = localElevation provides 8.dp) {
+        Card(
+            modifier = Modifier.padding(8.dp),
+            elevation = CardDefaults.cardElevation(localElevation.current)
         ) {
-            Text("안녕하세요. 패스트캠퍼스")
-            Text("스안녕하세요. 패스트캠퍼")
-            Text("퍼스안녕하세요. 패스트캠")
-            Text("캠퍼스안녕하세요. 패스트")
-            Text("트캠퍼스안녕하세요. 패스")
-            Text("스트캠퍼스안녕하세요. 패")
-            Text("패스트캠퍼스안녕하세요.")
 
-            // 3. `LocalContext.current`의 `resources` 출력
+            CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.error) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text("안녕하세요. 패스트캠퍼스")
+                    Text("스안녕하세요. 패스트캠퍼")
+                    Text(text = "${LocalContentColor.current}")
+
+                    CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.primary) {
+                        Text("퍼스안녕하세요. 패스트캠")
+                        Text("캠퍼스안녕하세요. 패스트")
+                        Text("트캠퍼스안녕하세요. 패스")
+                        Text(text = "${LocalContentColor.current}")
+                    }
+                    Text("스트캠퍼스안녕하세요. 패")
+                    Text("패스트캠퍼스안녕하세요.")
+
+                    // 3. `LocalContext.current`의 `resources` 출력
+                }
+            }
         }
     }
 }
