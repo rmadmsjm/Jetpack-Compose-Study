@@ -12,9 +12,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
 import kr.co.rmadmsjm.jc07_pokemonapp.screen.DetailScreen
 import kr.co.rmadmsjm.jc07_pokemonapp.screen.MainScreen
@@ -68,9 +70,14 @@ fun TopLevel(
         // 리스트로 전달해야 함
         composable(
             "Detail/{pokemonId}",
+            arguments = listOf(
+                navArgument("pokemonId") {
+                    type = NavType.IntType
+                }
+            )
         ) {
             // 4. `pokemonId`를 `Int`값으로 가져오기 (`arguments?.getInt` 이용)
-            val pokemonId = 0
+            val pokemonId = it.arguments?.getInt("pokemonId") as Int
             DetailScreen(
                 pokemonId = pokemonId,
                 onUpButtonClick = {
